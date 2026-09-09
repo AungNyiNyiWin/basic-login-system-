@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 users = {
     "annw1995": "621993",
     "aung": "12345",
@@ -5,15 +12,13 @@ users = {
 }
 
 
-
-
 while True:
     print("\n====login system====")
-    print("1. Login ")
-    print("2. Register ")
-    print("3. Exit")
+    print("1. login ")
+    print("2. register")
+    print("3. exit")
 
-    choice = input("enter your choice:")
+    choice = input("enter choice:")
 
     if choice == "1":
         username = input("enter username:").strip().lower()
@@ -23,24 +28,21 @@ while True:
         if saved_password is None:
             print("user not found.")
         elif saved_password == password:
-            print("login successful.")
+            print("login success.")
         else:
             print("wrong password.")
 
     elif choice == "2":
         username = input("enter username:").strip().lower()
         if username in users:
-            print("user exists.")
+            print("user already exists.") 
+
         else:
-            password = input("enter password.").strip()
+            password = input("enter password:").strip()
             users[username]=password
-            print("registration success")
+            print("registeration success.")
+
     elif choice == "3":
-        print("Goodbye")
+        print("goodbye!")
         break
-    else:
-        print("invalid choice")
-
-            
     
-
