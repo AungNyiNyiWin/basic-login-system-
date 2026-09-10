@@ -1,10 +1,6 @@
 
 
 
-
-
-
-
 users = {
     "annw1995": "621993",
     "aung": "12345",
@@ -40,7 +36,7 @@ while True:
         else:
             password = input("enter password:").strip()
             users[username]=password
-            print("registeration success.")
+            print("registration success.")
 
     elif choice == "3":
         print("goodbye!")
