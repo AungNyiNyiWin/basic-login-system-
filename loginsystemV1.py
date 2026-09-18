@@ -1,9 +1,14 @@
 users = {
     "aung123":"123456"
 }
+def get_login_username(users):
+    username = input("enter username:").strip().lower()   #အသစ်သင်ခန်းစာပါ။
+    if username not in users:
+        return None
+    return username
 
 def login(users):
-    username = input("enter username:").strip().lower()
+    username = get_login_username(users)
     saved_password = users.get(username)
     if saved_password is None:
         print("wrong username.")
@@ -13,12 +18,12 @@ def login(users):
         password = input("enter password.").strip()
         if saved_password == password:
             return True,username
-        else:
-            attempts += 1
-            print("wrong password.")
-    if attempts == 3:
-        print("account locked.")
-        return False,None
+        
+        attempts += 1   #အသစ်နေရာ ပါ else ထည့်စရာမလိုတော့တာပါ။  return က function ကို ရပ်စေတဲ့အတွက် return နောက်က code မလုပ်တော့ဘူး။
+        print("wrong password.")
+    
+    print("account locked.")
+    return False,None
 
 def get_username(users):
     while True:
