@@ -9,10 +9,11 @@ def get_login_username(users):
 
 def login(users):
     username = get_login_username(users)
-    saved_password = users.get(username)
-    if saved_password is None:
+    
+    if username is None:
         print("wrong username.")
         return False,None
+    saved_password = users[username]
     attempts = 0
     while attempts < 3:
         password = input("enter password.").strip()
@@ -39,16 +40,17 @@ def get_username(users):
 def get_password():
     while True:
         new_password = input("enter new password:").strip()
-        if len(new_password) <6:
-            print("please enter at least 6 characters")
-        else:
+        if len(new_password) >=6:
             break
+        print("please enter at least 6 characters")
+        
     while True:
         confirm_password = input("enter confirm password.").strip()
-        if new_password != confirm_password:
-            print("passwords do not match.")
-        else:
+        if new_password == confirm_password:
             break
+        print("passwords do not match.")
+        
+            
     return new_password
 
 def register(users):
@@ -99,8 +101,7 @@ while True:
         if success:
             print("login success.")
             user_menu(users,username)
-        else:
-            print("try again later")
+        
     elif choice == "2":
         passed = register(users)
         if passed:
