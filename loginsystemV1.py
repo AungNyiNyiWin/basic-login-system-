@@ -1,115 +1,261 @@
-users = {
-    "aung123":"123456"
-}
+users = {}
+
 def get_login_username(users):
-    username = input("enter username:").strip().lower()   #အသစ်သင်ခန်းစာပါ။
+    username = input("enter username:").strip().lower()
     if username not in users:
         return None
     return username
 
 def login(users):
     username = get_login_username(users)
-    
     if username is None:
         print("wrong username.")
-        return False,None
-    saved_password = users[username]
+        return False,None,None,None
+    status = users[username]["status"]
+    if status is False:
+        print("account disabled.")
+        return False,None,None,None
+    saved_password = users[username]["password"]
+    role = users[username]["role"]
     attempts = 0
-    while attempts < 3:
-        password = input("enter password.").strip()
+    while attempts <3:
+        password = input("enter password:").strip()
         if saved_password == password:
-            return True,username
-        
-        attempts += 1   #အသစ်နေရာ ပါ else ထည့်စရာမလိုတော့တာပါ။  return က function ကို ရပ်စေတဲ့အတွက် return နောက်က code မလုပ်တော့ဘူး။
-        print("wrong password.")
-    
-    print("account locked.")
-    return False,None
+            return True,username,role,status
+        attempts += 1
+        print("wrong password")
+    print("acccount locked.")
+    return False,None,None,None
 
-def get_username(users):
+def get_new_username(users):
     while True:
         new_username = input("enter new username:").strip().lower()
         if new_username in users:
-            print("username already exists.")
+            print("username already exist.")
             continue
-        if len(new_username) < 6:
+        if len(new_username)<6:
             print("please enter at least 6 characters")
             continue
         return new_username
 
-def get_password():
+def get_new_password():
     while True:
         new_password = input("enter new password:").strip()
-        if len(new_password) >=6:
+        if len(new_password)>= 6:
             break
         print("please enter at least 6 characters")
-        
+
     while True:
-        confirm_password = input("enter confirm password.").strip()
+        confirm_password = input("enter confirm password:").strip()
         if new_password == confirm_password:
             break
         print("passwords do not match.")
-        
-            
     return new_password
 
 def register(users):
-    new_username = get_username(users)
-    new_password = get_password()
-    users[new_username]=new_password
+    username = get_new_username(users)
+    password = get_new_password()
+
+    users[username]={
+        "password":password,
+        "role":"user",
+        "status":True
+    }
     return True
 
 def change_password(users,username):
-    old_password = input("enter old password.").strip()
-    if old_password != users[username]:
+    old_password = input("enter old password:").strip()
+    if old_password != users[username]["password"]:
         print("old password not found.")
         return False
-    else:
-        new_password = get_password()
-        users[username]=new_password
-        return True
+    new_password = get_new_password()
+    users[username]["password"]=new_password
+    return True
+
+def first_admin(users):
+    username = get_new_username(users)
+    password = get_new_password()
+
+    users[username]= {
+        "password":password,
+        "role":"admin",
+        "status":True
+    }
+    print("first admin created.")
+    return True
+
+if not users:
+    first_admin(users)
+
+def add_users(users):
+    username = get_new_username(users)
+    password =get_new_password()
+
+    while True:
+        print("1. normal user")
+        print("2. admin")
+        role_choice = input("enter role choice:")
+        if role_choice == "1":
+            role = "user"
+            break
+        elif role_choice == "2":
+            role = "admin"
+            break
+        else:
+            print("invalid role choice")
+
+    users[username]={
+        "password":password,
+        "role":role,
+        "status":True
+        }
+    return True
+
+def delete_user(users,current_username):
+    username = input("enter username :").strip().lower()
+    if username not in users:
+        print("user not found")
+        return False
+    elif users[username]["role"]== "admin":
+        print("cannot delete admin role")
+        return False
+    elif username == current_username:
+        print("connont delete current account.")
+        return False
+
+    del users[username]
+    return True
+
+def change_role(users,current_username):
+    username = input("enter username:").strip().lower()
+    if username not in users:
+        print("user not found.")
+        return False
+    elif username == current_username:
+        print("cannot change current user role")
+        return False
+
+    while True:
+        print("1. normal user")
+        print("2. admin")
+        role_choice = input("enter role choice:")
+        if role_choice == '1':
+            role = "user"
+            break
+        elif role_choice == "2":
+            role == "admin"
+            break
+        else:
+            print("invalid role choice")
+
+    users[username]["role"]=role
+    return True
+
+def change_users_status(users,current_username):
+    username = input("enter username:").strip().lower()
+    if username not  in users:
+        print("user not found.")
+        return False
+
+    if username == current_username:
+        print("cannot change your own status")
+        return False
+
+    while True:
+        print("1. Disable")
+        print("2. Enable")
+        status_choice = input("enter status choice:")
+        if status_choice == "1":
+            status = False
+            break
+        elif status_choice == "2":
+            status = True
+            break
+        else:
+            print("invalid status choice.")
+
+    users[username]["status"]= status
+    return True
+
+def admin_menu(users,username):
+    while True:
+        print("\n====admin menu===")
+        print("1. show all users")
+        print("2. add users")
+        print("3. delete users")
+        print("4. change roles")
+        print("5. change user status")
+        print("6. back")
+        admin_choice = input("enter admin choice:")
+        if admin_choice == "1":
+            for user in users:
+                role = users[user]["role"]
+                print("username:",user)
+                print("role:",role)
+        elif admin_choice == "2":
+            added = add_users(users)
+            if added:
+                print("new user added.")
+        elif admin_choice == "3":
+            deleted = delete_user(users,username)            
+            if deleted:
+                print("user deleted.")
+        elif admin_choice == "4":
+            changed = change_role(users,username)
+            if changed:
+                print("user role changed.")
+        elif admin_choice == "5":
+            ok = change_users_status(users,username)
+            if ok:
+                print("user status changed.")
+        elif admin_choice == "6":
+            print("back")
+            break
+        else:
+            print("invalid admin choice.")
 
 def user_menu(users,username):
     while True:
-        print("===user menu===")
-        print("1. username.")
+        print("1. username")
         print("2. change password")
-        print("3. logout.")
-        users_choice = input("enter user choice:")
-        if users_choice =="1":
+        print("3. logout")
+        user_choice = input("enter user chocie:")
+        if user_choice == "1":
             print("welcome,",username)
-        elif users_choice == "2":
+        elif user_choice == "2":
             changed = change_password(users,username)
             if changed:
                 print("password changed.")
-            else:
-                print("failed ")
-        elif users_choice == "3":
+        elif user_choice == "3":
             print("logout")
             break
         else:
-            print("invalid users choice.")
+            print("invalid user choice.")
 
 while True:
-    print("\n===login system===")
+    print("\n====login system===")
     print("1. login")
     print("2. register")
-    print("3. exit.")
+    print("3. logout")
     choice = input("enter choice:")
     if choice == "1":
-        success,username = login(users)
+        success,username,role,status =login(users)
         if success:
-            print("login success.")
-            user_menu(users,username)
-        
+            if role == "admin":
+                print("login success.")
+                admin_menu(users,username)
+            else:
+                user_menu(users,username)
     elif choice == "2":
-        passed = register(users)
-        if passed:
+        registered= register(users)
+        if registered:
             print("registration success.")
-        else:
-            print("registration failed.")
     elif choice == "3":
-        print("exit")
+        print("logout")
         break
     else:
-        print("invaild choice.")
+        print("invalid choice.")
+
+
+
+
