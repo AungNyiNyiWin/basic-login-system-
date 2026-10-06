@@ -1,4 +1,10 @@
 users = {}
+import hashlib
+
+def hash_password(password):    #(password) >>> parameter  for hashing 
+    hashed = hashlib.sha256(password.encode()).hexdigest()
+    return hashed
+
 
 def get_login_username(users):
     username = input("enter username:").strip().lower()
@@ -20,7 +26,8 @@ def login(users):
     attempts = 0
     while attempts <3:
         password = input("enter password:").strip()
-        if saved_password == password:
+        hashed_password = hash_password(password)
+        if saved_password == hashed_password:
             return True,username,role,status
         attempts += 1
         print("wrong password")
@@ -54,10 +61,11 @@ def get_new_password():
 
 def register(users):
     username = get_new_username(users)
-    password = get_new_password()
-
+    password = get_new_password()   #arguement for hash_password(____)
+    hashed_password = hash_password(password)   
+    
     users[username]={
-        "password":password,
+        "password":hashed_password,
         "role":"user",
         "status":True
     }
@@ -68,16 +76,18 @@ def change_password(users,username):
     if old_password != users[username]["password"]:
         print("old password not found.")
         return False
+    
     new_password = get_new_password()
-    users[username]["password"]=new_password
+    hashed_password = hash_password(new_password)
+    users[username]["password"]=hashed_password
     return True
 
 def first_admin(users):
     username = get_new_username(users)
     password = get_new_password()
-
+    hashed_password = hash_password(password)
     users[username]= {
-        "password":password,
+        "password":hashed_password,
         "role":"admin",
         "status":True
     }
@@ -103,9 +113,9 @@ def add_users(users):
             break
         else:
             print("invalid role choice")
-
+    hashed_password = hash_password(password)
     users[username]={
-        "password":password,
+        "password":hashed_password,
         "role":role,
         "status":True
         }
